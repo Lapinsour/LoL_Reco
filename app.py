@@ -89,7 +89,7 @@ with col_ennemis:
 st.markdown("---")
 
 # --- RÉSULTATS ---
-if st.button("🚀 Calculer les Recommandations", use_container_width=True):
+if st.button("Calculer les Recommandations", use_container_width=True):
     
     moteur.synergy_weight = 0.5 if type_partie == "Solo Q" else 1.5 if type_partie == "Clash" else 1.0
     tous_sauf_vide = [c for c in liste_champions if c]
@@ -97,7 +97,7 @@ if st.button("🚀 Calculer les Recommandations", use_container_width=True):
     # 1. Calcul du Top 5 Global
     recos_globales = moteur.recommander(
         role_recherche=role_recherche, ennemis=equipe_ennemie, allies=equipe_alliee,
-        bans=[], joueur_pool=tous_sauf_vide, top_n=5
+        bans=[], bans=bans_selection, joueur_pool=tous_sauf_vide, top_n=5
     )
     
     st.subheader("🏆 Top 5 Recommandations Globales")
@@ -110,10 +110,10 @@ if st.button("🚀 Calculer les Recommandations", use_container_width=True):
     # 2. Calcul du Champion Pool (si renseigné)
     if joueur_pool:
         st.markdown("---")
-        st.subheader("⭐ Scores de vos Champions")
+        st.subheader("Scores de vos Champions")
         recos_pool = moteur.recommander(
             role_recherche=role_recherche, ennemis=equipe_ennemie, allies=equipe_alliee,
-            bans=[], joueur_pool=joueur_pool, top_n=len(joueur_pool) # top_n s'adapte à la taille du pool
+            bans=[], bans=bans_selection, joueur_pool=joueur_pool, top_n=len(joueur_pool) 
         )
         
         # Affichage dynamique selon le nombre de champions choisis (max 6 par ligne)
