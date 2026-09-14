@@ -83,20 +83,6 @@ with col_ennemis:
 
 st.markdown("---")
 
-
-
-# --- EXPLICATIONS MATHÉMATIQUES (Menu déroulant) ---
-with st.expander("ℹ️ Comment ces pourcentages sont-ils calculés ?"):
-    st.markdown("""
-    Le score affiché n'est pas un simple taux de victoire global, mais une prédiction mathématique basée sur 4 piliers :
-
-    * **Le Lissage Bayésien :** Pour éviter qu'un champion ayant 1 victoire sur 1 partie n'affiche un score biaisé de 100%, l'algorithme tire artificiellement les statistiques vers 50% lorsque l'échantillon de données est trop faible.
-    * **L'Évaluation du Vis-à-vis (Moyenne Pondérée) :** Le moteur donne beaucoup plus d'importance à votre adversaire direct. Si vous cherchez un Toplaner, vos statistiques historiques contre le Top ennemi pèseront **2.5 fois plus lourd** dans la note finale que vos statistiques contre le Support ennemi.
-    * **Les Synergies & le Bonus Premade :** Le système calcule le différentiel de victoire de votre champion lorsqu'il est joué avec vos alliés actuels. Si la case **Premade** est cochée, le poids de cette synergie augmente de 50% et reçoit un micro-bonus pour refléter l'avantage de la communication vocale.
-    * **L'Ajustement de la Meta :** En *Solo Q*, le moteur diminue le poids des synergies d'équipe pour prioriser les victoires d'affrontements individuels (counters). À l'inverse, le mode *Clash* donne la priorité aux compositions d'équipe fortement synergiques.
-    """)
-st.markdown("---")
-
 # --- RÉSULTATS ---
 if st.button("🚀 Calculer les Recommandations", use_container_width=True):
     
@@ -132,3 +118,15 @@ if st.button("🚀 Calculer les Recommandations", use_container_width=True):
                 st.image(get_champ_img(champ), width=60)
                 # Affichage sous forme de 'metric' pour un design Dashboard propre
                 st.metric(label=champ, value=f"{score*100:.1f}%")
+
+# --- EXPLICATIONS MATHÉMATIQUES (Menu déroulant) ---
+with st.expander("ℹ️ Comment ces pourcentages sont-ils calculés ?"):
+    st.markdown("""
+    Le score affiché n'est pas un simple taux de victoire global, mais une prédiction mathématique basée sur 4 piliers :
+
+    * **Le Lissage Bayésien :** Pour éviter qu'un champion ayant 1 victoire sur 1 partie n'affiche un score biaisé de 100%, l'algorithme tire artificiellement les statistiques vers 50% lorsque l'échantillon de données est trop faible.
+    * **L'Évaluation du Vis-à-vis (Moyenne Pondérée) :** Le moteur donne beaucoup plus d'importance à votre adversaire direct. Si vous cherchez un Toplaner, vos statistiques historiques contre le Top ennemi pèseront **2.5 fois plus lourd** dans la note finale que vos statistiques contre le Support ennemi.
+    * **Les Synergies & le Bonus Premade :** Le système calcule le différentiel de victoire de votre champion lorsqu'il est joué avec vos alliés actuels. Si la case **Premade** est cochée, le poids de cette synergie augmente de 50% et reçoit un micro-bonus pour refléter l'avantage de la communication vocale.
+    * **L'Ajustement de la Meta :** En *Solo Q*, le moteur diminue le poids des synergies d'équipe pour prioriser les victoires d'affrontements individuels (counters). À l'inverse, le mode *Clash* donne la priorité aux compositions d'équipe fortement synergiques.
+    """)
+
