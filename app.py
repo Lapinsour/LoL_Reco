@@ -97,7 +97,7 @@ if st.button("Calculer les Recommandations", use_container_width=True):
     # 1. Calcul du Top 5 Global
     recos_globales = moteur.recommander(
         role_recherche=role_recherche, ennemis=equipe_ennemie, allies=equipe_alliee,
-        bans=[], bans=bans_selection, joueur_pool=tous_sauf_vide, top_n=5
+        bans=bans_selection, joueur_pool=tous_sauf_vide, top_n=5
     )
     
     st.subheader("🏆 Top 5 Recommandations Globales")
