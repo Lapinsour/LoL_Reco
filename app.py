@@ -42,9 +42,14 @@ with col1:
     type_partie = st.selectbox("Type de Partie", ["Solo Q", "Flex", "Clash"])
 with col2:
     role_recherche = st.selectbox("Rôle Recherché", roles)
-with col3:
-    # Nouveau : Sélection du Champion Pool
+with col3:    
     joueur_pool = st.multiselect("Vos champions (optionnel)", liste_champions[1:], help="Affiche le score de ces champions même s'ils ne sont pas dans le Top 5")
+
+bans_selection = st.multiselect(
+    "🚫 Champions Bannis", 
+    liste_champions[1:], 
+    help="Ces champions seront totalement exclus des recommandations de draft."
+)
 
 st.markdown("---")
 
