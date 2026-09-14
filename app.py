@@ -113,7 +113,7 @@ if st.button("Calculer les Recommandations", use_container_width=True):
         st.subheader("Scores de vos Champions")
         recos_pool = moteur.recommander(
             role_recherche=role_recherche, ennemis=equipe_ennemie, allies=equipe_alliee,
-            bans=[], bans=bans_selection, joueur_pool=joueur_pool, top_n=len(joueur_pool) 
+            bans=bans_selection, joueur_pool=joueur_pool, top_n=len(joueur_pool) 
         )
         
         # Affichage dynamique selon le nombre de champions choisis (max 6 par ligne)
