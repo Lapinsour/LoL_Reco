@@ -104,7 +104,7 @@ class DraftRecommender:
         return score_total
 
     def recommander(self, role_recherche, ennemis, allies, bans, joueur_pool, top_n=5):
-        # Mise à jour de l'extraction (c, r, p) pour lire le tuple allié
+        
         champions_indisponibles = set([c for c, r in ennemis] + [c for c, r, p in allies] + bans)
         
         resultats = []
