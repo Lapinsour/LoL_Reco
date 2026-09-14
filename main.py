@@ -6,8 +6,8 @@ from collections import defaultdict
 import os
 
 # --- MOTEUR DE RECOMMANDATION ---
-class DraftRecommender
-    def __init__(self, matchups_csv_path, synergies_csv_path, C_bayesian=10, synergy_weight=1.0)
+class DraftRecommender :
+    def __init__(self, matchups_csv_path, synergies_csv_path, C_bayesian=10, synergy_weight=1.0) :
         self.C = C_bayesian
         self.global_wr = 0.50
         self.synergy_weight = synergy_weight
@@ -31,57 +31,57 @@ class DraftRecommender
         self._load_matchups(matchups_csv_path)
         self._load_synergies(synergies_csv_path)
 
-    def _load_matchups(self, path)
+    def _load_matchups(self, path) :
         self.matchups = defaultdict(lambda defaultdict(lambda defaultdict(dict)))
-        if os.path.exists(path)
+        if os.path.exists(path) :
             df = pd.read_csv(path)
-            for _, row in df.iterrows()
+            for _, row in df.iterrows() :
                 self.matchups[row['champ_a']][row['role_a']][row['champ_b']][row['role_b']] = {
                     'winrate' row['winrate'], 'matches' row['matches']
                 }
 
-    def _load_synergies(self, path)
+    def _load_synergies(self, path) :
         self.synergies = {}
-        if os.path.exists(path)
+        if os.path.exists(path) :
             df = pd.read_csv(path)
             for _, row in df.iterrows()
                 key = (row['champ_1'], row['role_1'], row['champ_2'], row['role_2'])
                 self.synergies[key] = {'winrate' row['winrate'], 'matches' row['matches']}
 
-    def _get_synergy_key(self, cA, rA, cB, rB)
+    def _get_synergy_key(self, cA, rA, cB, rB) :
         duo = sorted([(cA, rA), (cB, rB)])
         return (duo[0][0], duo[0][1], duo[1][0], duo[1][1])
 
-    def _bayesian_smoothing(self, raw_wr, matches)
+    def _bayesian_smoothing(self, raw_wr, matches) :
         return ((self.C  self.global_wr) + (matches  raw_wr))  (self.C + matches)
 
-    def evaluer_candidat(self, candidat_champ, candidat_role, ennemis, allies)
+    def evaluer_candidat(self, candidat_champ, candidat_role, ennemis, allies) :
         score_total = 0.0
         
-        if ennemis
+        if ennemis:
             score_ennemis = 0.0
             poids_total_ennemis = 0.0
-            for e_champ, e_role in ennemis
+            for e_champ, e_role in ennemis :
                 poids = self.matchup_weights.get(candidat_role, {}).get(e_role, 1.0)
-                try
+                try :
                     stats = self.matchups[candidat_champ][candidat_role][e_champ][e_role]
                     wr_lisse = self._bayesian_smoothing(stats['winrate'], stats['matches'])
                     score_ennemis += (wr_lisse  poids)
-                except KeyError
+                except KeyError :
                     score_ennemis += (0.50  poids)
                 poids_total_ennemis += poids
             score_total += (score_ennemis  max(poids_total_ennemis, 1.0))
-        else
+        else:
             score_total += 0.50
 
-        if allies
+        if allies:
             bonus_synergie = 0.0
             poids_total_allies = 0.0
-            for a_champ, a_role in allies
+            for a_champ, a_role in allies :
                 poids_syn = self.synergy_weights.get(candidat_role, {}).get(a_role, 1.0)
                 poids_total_allies += poids_syn
                 cle = self._get_synergy_key(candidat_champ, candidat_role, a_champ, a_role)
-                if cle in self.synergies
+                if cle in self.synergies:
                     stats = self.synergies[cle]
                     wr_lisse = self._bayesian_smoothing(stats['winrate'], stats['matches'])
                     bonus_synergie += ((wr_lisse - 0.50)  poids_syn)
@@ -89,11 +89,11 @@ class DraftRecommender
 
         return score_total
 
-    def recommander(self, role_recherche, ennemis, allies, bans, joueur_pool, top_n=5)
+    def recommander(self, role_recherche, ennemis, allies, bans, joueur_pool, top_n=5) :
         champions_indisponibles = set([c for c, r in ennemis] + [c for c, r in allies] + bans)
         resultats = []
-        for champ in joueur_pool
-            if champ in champions_indisponibles 
+        for champ in joueur_pool :
+            if champ in champions_indisponibles :
                 continue
             score = self.evaluer_candidat(champ, role_recherche, ennemis, allies)
             resultats.append((champ, score))
@@ -125,11 +125,11 @@ moteur = DraftRecommender(
 
 # --- ROUTES ---
 @app.post(draftrecommend)
-def get_recommendations(req DraftRequest)
+def get_recommendations(req DraftRequest) :
     poids_synergie = 1.0 
-    if req.type_partie == Solo Q
+    if req.type_partie == Solo Q :
         poids_synergie = 0.5
-    elif req.type_partie == Clash
+    elif req.type_partie == Clash :
         poids_synergie = 1.5
     moteur.synergy_weight = poids_synergie
     
