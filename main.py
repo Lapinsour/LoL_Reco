@@ -77,6 +77,8 @@ class DraftRecommender:
         if allies:
             bonus_synergie = 0.0
             poids_total_allies = 0.0
+            
+            # Déballage avec le 3ème argument : a_premade
             for a_champ, a_role, a_premade in allies:
                 poids_syn = self.synergy_weights.get(candidat_role, {}).get(a_role, 1.0)
                 
@@ -90,10 +92,13 @@ class DraftRecommender:
                 if cle in self.synergies:
                     stats = self.synergies[cle]
                     wr_lisse = self._bayesian_smoothing(stats['winrate'], stats['matches'])
+                    
+                    # On peut aussi ajouter un bonus flat de +0.5% de WR pour la coordination vocale
                     if a_premade:
                         wr_lisse += 0.005 
                         
                     bonus_synergie += ((wr_lisse - 0.50) * poids_syn)
+                
             score_total += (bonus_synergie / max(poids_total_allies, 1.0)) * self.synergy_weight
 
         return score_total
