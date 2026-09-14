@@ -39,11 +39,17 @@ equipe_ennemie = []
 with col_allies:
     st.subheader("Équipe Alliée")
     for i in range(4):
-        c1, c2 = st.columns(2)
+        # Découpage en 3 colonnes (Champion = 50%, Rôle = 30%, Premade = 20%)
+        c1, c2, c3 = st.columns([5, 3, 2]) 
         champ = c1.selectbox(f"Allié {i+1}", liste_champions, key=f"a_c_{i}")
         role = c2.selectbox(f"Rôle {i+1}", roles, key=f"a_r_{i}")
+        
+        # Ajout du paramètre Premade
+        premade = c3.checkbox("Premade", key=f"a_p_{i}")
+        
         if champ:
-            equipe_alliee.append((champ, role))
+            # On stocke désormais un tuple de 3 éléments
+            equipe_alliee.append((champ, role, premade))
 
 with col_ennemis:
     st.subheader("Équipe Ennemie")
