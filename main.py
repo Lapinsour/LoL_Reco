@@ -123,12 +123,17 @@ class ChampionRole(BaseModel):
     champion: str
     role: str
 
+class AlliedChampionRole(BaseModel):
+    champion: str
+    role: str
+    premade: bool = False # False par défaut si non précisé
+
 class DraftRequest(BaseModel):
     joueur_pool: List[str]
     role_recherche: str
     type_partie: str
     bans: List[str]
-    equipe_alliee: List[ChampionRole]
+    equipe_alliee: List[AlliedChampionRole] # On utilise le nouveau modèle ici
     equipe_ennemie: List[ChampionRole]
 
 
@@ -150,8 +155,10 @@ def get_recommendations(req: DraftRequest):
         poids_synergie = 1.5
     moteur.synergy_weight = poids_synergie
     
-    ennemis_tuples = [(e.champion, e.role) for e in req.equipe_ennemie]
-    allies_tuples = [(a.champion, a.role) for a in req.equipe_alliee]
+    
+    ennemis_tuples = [(e.champion, e.role) for e in req.equipe_ennemie]   
+    
+    allies_tuples = [(a.champion, a.role, a.premade) for a in req.equipe_alliee]
     
     recos = moteur.recommander(
         role_recherche=req.role_recherche,
