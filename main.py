@@ -77,26 +77,38 @@ class DraftRecommender:
         if allies:
             bonus_synergie = 0.0
             poids_total_allies = 0.0
-            for a_champ, a_role in allies:
+            for a_champ, a_role, a_premade in allies:
                 poids_syn = self.synergy_weights.get(candidat_role, {}).get(a_role, 1.0)
+                
+                # Bonus Premade : Le poids de cette synergie augmente de 50%
+                if a_premade:
+                    poids_syn *= 1.5 
+                    
                 poids_total_allies += poids_syn
+                
                 cle = self._get_synergy_key(candidat_champ, candidat_role, a_champ, a_role)
                 if cle in self.synergies:
                     stats = self.synergies[cle]
                     wr_lisse = self._bayesian_smoothing(stats['winrate'], stats['matches'])
+                    if a_premade:
+                        wr_lisse += 0.005 
+                        
                     bonus_synergie += ((wr_lisse - 0.50) * poids_syn)
             score_total += (bonus_synergie / max(poids_total_allies, 1.0)) * self.synergy_weight
 
         return score_total
 
     def recommander(self, role_recherche, ennemis, allies, bans, joueur_pool, top_n=5):
-        champions_indisponibles = set([c for c, r in ennemis] + [c for c, r in allies] + bans)
+        # Mise à jour de l'extraction (c, r, p) pour lire le tuple allié
+        champions_indisponibles = set([c for c, r in ennemis] + [c for c, r, p in allies] + bans)
+        
         resultats = []
         for champ in joueur_pool:
             if champ in champions_indisponibles: 
                 continue
             score = self.evaluer_candidat(champ, role_recherche, ennemis, allies)
             resultats.append((champ, score))
+            
         resultats.sort(key=lambda x: x[1], reverse=True)
         return resultats[:top_n]
 
